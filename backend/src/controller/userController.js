@@ -63,8 +63,8 @@ export const loginUser = async (req, res, next) => {
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "Lax"
+            secure: true,
+            sameSite: "none"
         })
         res.json({ message: "Login successful", user: { _id: user._id, email: user.email, name: user.name } })
     } catch (error) {
@@ -76,8 +76,8 @@ export const logoutUser = async (req, res, next) => {
     try {
         res.cookie("token", "", {
             httpOnly: true,
-            secure: false,
-            sameSite: "Lax",
+            secure: true,
+            sameSite: "none",
             expires: new Date(0)
         });
 
