@@ -6,10 +6,12 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_API_BASE_URL
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch('http://localhost:8080/user/me', {
+        const res = await fetch(`${API_URL}/user/me`, {
           credentials: 'include'
         });
         if (res.ok) {
@@ -29,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch('http://localhost:8080/user/logout', {
+      await fetch(`${API_URL}/user/logout`, {
         method: 'POST',
         credentials: 'include'
       });
