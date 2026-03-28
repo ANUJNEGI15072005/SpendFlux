@@ -18,7 +18,7 @@ const Loader = () => {
 
                 {/* Optional subtitle */}
                 <p className="text-gray-400 text-sm tracking-wide">
-                    Loading your dashboard...
+                    Loading your page...
                 </p>
 
             </div>
