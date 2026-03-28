@@ -117,9 +117,23 @@ const Profile = () => {
                 </div>
 
                 {loading ? (
-                    <p className="text-center text-sm sm:text-base text-gray-500">
-                        Loading your data...
-                    </p>
+                    <div className="flex justify-center py-10">
+                        <div className="flex flex-col items-center gap-3">
+
+                            <h1 className='text-xl sm:text-2xl font-heading font-extrabold tracking-tight animate-pulse'>
+                                Spend<span className='text-blue-900'>Flux</span>
+                            </h1>
+
+                            <div className="w-32 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                <div className="h-full w-1/2 bg-blue-900 animate-[loading_1s_linear_infinite]"></div>
+                            </div>
+
+                            <p className="text-xs sm:text-sm text-gray-500">
+                                Loading your data...
+                            </p>
+
+                        </div>
+                    </div>
                 ) : transaction.length === 0 ? (
 
                     <div className="text-center text-sm sm:text-base text-gray-500 bg-white p-4 sm:p-6 rounded-xl shadow">
@@ -184,7 +198,7 @@ const Profile = () => {
 
                             <div className="flex items-center justify-between mb-2">
                                 <h2 className="text-xs sm:text-sm text-gray-500">Spending Style</h2>
-                                
+
                             </div>
 
                             <p className="text-lg sm:text-xl font-semibold text-gray-800">
