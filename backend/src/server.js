@@ -11,8 +11,11 @@ dotenv.config()
 const app = express()
 app.use(express.json())
 app.use(cors({
-    origin: "https://spendflux-tracker.vercel.app", 
-    credentials: true
+  origin: [
+    "http://localhost:5173",
+    "https://spendflux-tracker.vercel.app"
+  ],
+  credentials: true
 }))
 app.use(cookieParser())
 const PORT = process.env.PORT || 8080

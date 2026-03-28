@@ -13,33 +13,46 @@ import Transactions from './pages/Transactions';
 import Budget from './pages/Budget';
 
 function App() {
+
+  const originalWarn = console.warn;
+
+  console.warn = (...args) => {
+    if (
+      typeof args[0] === "string" &&
+      args[0].includes("The width(-1) and height(-1) of chart")
+    ) {
+      return; // 🚫 ignore this specific warning
+    }
+
+    originalWarn(...args); // keep other warnings
+  };
   return (
     <AuthProvider>
-        <Routes>
-          
-          <Route path="/" element={<Home />} />
+      <Routes>
 
-          <Route path="/login" element={
-            <PublicRoute><Login /></PublicRoute>
-          } />
-          <Route path="/register" element={
-            <PublicRoute><Register /></PublicRoute>
-          } />
+        <Route path="/" element={<Home />} />
 
-          <Route path="/dashboard" element={
-            <ProtectedRoute><Dashboard /></ProtectedRoute>
-          } />
-          <Route path="/profile" element={
-            <ProtectedRoute><Profile /></ProtectedRoute>
-          } />
-          <Route path="/transactions" element={
-            <ProtectedRoute><Transactions /></ProtectedRoute>
-          } />
-          <Route path="/budget" element={
-            <ProtectedRoute><Budget /></ProtectedRoute>
-          } />
+        <Route path="/login" element={
+          <PublicRoute><Login /></PublicRoute>
+        } />
+        <Route path="/register" element={
+          <PublicRoute><Register /></PublicRoute>
+        } />
 
-        </Routes>
+        <Route path="/dashboard" element={
+          <ProtectedRoute><Dashboard /></ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute><Profile /></ProtectedRoute>
+        } />
+        <Route path="/transactions" element={
+          <ProtectedRoute><Transactions /></ProtectedRoute>
+        } />
+        <Route path="/budget" element={
+          <ProtectedRoute><Budget /></ProtectedRoute>
+        } />
+
+      </Routes>
       <ToastContainer position="top-right" autoClose={2000} theme="dark" />
     </AuthProvider>
   );
