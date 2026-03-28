@@ -14,13 +14,16 @@ export const AuthProvider = ({ children }) => {
         const res = await fetch(`${API_URL}/user/me`, {
           credentials: 'include'
         });
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data);
-        } else {
+
+        if (res.status === 401) {
           setUser(null);
+          return;
         }
-      } catch (err) {
+
+        const data = await res.json();
+        setUser(data);
+
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);

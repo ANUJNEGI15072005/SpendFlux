@@ -10,7 +10,7 @@ export const registerUser = async (req, res, next) => {
         next(error)
         return;
     }
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$/
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$#!%*?&])[A-Za-z\d@$#!%*?&]{8,12}$/
     if (!passwordRegex.test(password)) {
         const error = new Error("Password must be 8-12 chars, include uppercase, lowercase, number & symbol")
         error.statusCode = 400
@@ -25,8 +25,8 @@ export const registerUser = async (req, res, next) => {
         return;
     }
     try {
-        const salt = bcrypt.genSaltSync(10)
-        const hash = bcrypt.hashSync(password, salt)
+        const salt = await bcrypt.genSaltSync(10)
+        const hash = await bcrypt.hashSync(password, salt)
         await User.create({
             name, email, password: hash
         })
@@ -64,7 +64,8 @@ export const loginUser = async (req, res, next) => {
         res.cookie("token", token, {
             httpOnly: true,
             secure: true,
-            sameSite: "none"
+            sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000
         })
         res.json({ message: "Login successful", user: { _id: user._id, email: user.email, name: user.name } })
     } catch (error) {
