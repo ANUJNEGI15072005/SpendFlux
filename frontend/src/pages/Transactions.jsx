@@ -7,6 +7,7 @@ import "react-date-range/dist/theme/default.css"
 
 const Transaction = () => {
   const calendarRef = useRef()
+  const [loading, setLoading] = useState(true)
   const [typeFilter, setTypeFilter] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("")
   const [sortOrder, setSortOrder] = useState("desc")
@@ -116,12 +117,21 @@ const Transaction = () => {
     })
 
   useEffect(() => {
-    fetch(`${API_URL}/transaction`, {
-      credentials: "include"
-    })
-      .then(res => res.json())
-      .then(data => setTransaction(data.transaction))
-      .catch(err => console.error(err))
+    const fetchTransactions = async () => {
+      try {
+        const res = await fetch(`${API_URL}/transaction`, {
+          credentials: "include"
+        })
+        const data = await res.json()
+        setTransaction(data.transaction)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTransactions()
   }, [])
 
   async function handleIncome(e) {
@@ -333,75 +343,100 @@ const Transaction = () => {
                 <th className="px-4 sm:px-6 py-3 text-left">Delete</th>
               </tr>
             </thead>
-
             <tbody>
-              {filteredTransactions.map((t) => (
-                <tr
-                  key={t._id}
-                  className="border-t hover:bg-gray-50 transition"
-                >
-                  <td
-                    onClick={() => toggleDetail(t)}
-                    className="px-4 sm:px-6 py-3 cursor-pointer"
-                  >
-                    <span className={
-                      t.type === "income"
-                        ? "text-green-600 font-semibold"
-                        : "text-red-600 font-semibold"
-                    }>
-                      {t.type}
-                    </span>
-                  </td>
+              {loading ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-12">
+                    <div className="flex flex-col items-center gap-3">
 
-                  <td
-                    onClick={() => toggleDetail(t)}
-                    className="px-4 sm:px-6 py-3 cursor-pointer font-medium"
-                  >
-                    ₹{t.amount}
-                  </td>
+                      <h1 className='text-xl sm:text-2xl font-heading font-extrabold tracking-tight animate-pulse'>
+                        Spend<span className='text-blue-900'>Flux</span>
+                      </h1>
 
-                  <td
-                    onClick={() => toggleDetail(t)}
-                    className="px-4 sm:px-6 py-3 cursor-pointer text-gray-600"
-                  >
-                    {new Date(t.date).toLocaleDateString("en-IN")}
-                  </td>
+                      <div className="w-32 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="h-full w-1/2 bg-blue-900 animate-[loading_1s_linear_infinite]"></div>
+                      </div>
 
-                  <td
-                    onClick={() => toggleDetail(t)}
-                    className="px-4 sm:px-6 py-3 cursor-pointer"
-                  >
-                    {t.category}
-                  </td>
+                      <p className="text-xs sm:text-sm text-gray-500">
+                        Loading transactions...
+                      </p>
 
-                  {/* EDIT */}
-                  <td className="px-4 sm:px-6 py-3">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        toggleEdit(t)
-                      }}
-                      className="px-3 py-1 text-xs sm:text-sm rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition"
-                    >
-                      Edit
-                    </button>
+                    </div>
                   </td>
-
-                  {/* DELETE */}
-                  <td className="px-4 sm:px-6 py-3">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        toggleRemove(t)
-                      }}
-                      className="px-3 py-1 text-xs sm:text-sm rounded-full bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition"
-                    >
-                      Delete
-                    </button>
-                  </td>
-
                 </tr>
-              ))}
+              ) : filteredTransactions.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-10 text-gray-500">
+                    No transactions found
+                  </td>
+                </tr>
+              ) : (
+                filteredTransactions.map((t) => (
+                  <tr
+                    key={t._id}
+                    className="border-t hover:bg-gray-50 transition"
+                  >
+                    <td
+                      onClick={() => toggleDetail(t)}
+                      className="px-4 sm:px-6 py-3 cursor-pointer"
+                    >
+                      <span className={
+                        t.type === "income"
+                          ? "text-green-600 font-semibold"
+                          : "text-red-600 font-semibold"
+                      }>
+                        {t.type}
+                      </span>
+                    </td>
+
+                    <td
+                      onClick={() => toggleDetail(t)}
+                      className="px-4 sm:px-6 py-3 cursor-pointer font-medium"
+                    >
+                      ₹{t.amount}
+                    </td>
+
+                    <td
+                      onClick={() => toggleDetail(t)}
+                      className="px-4 sm:px-6 py-3 cursor-pointer text-gray-600"
+                    >
+                      {new Date(t.date).toLocaleDateString("en-IN")}
+                    </td>
+
+                    <td
+                      onClick={() => toggleDetail(t)}
+                      className="px-4 sm:px-6 py-3 cursor-pointer"
+                    >
+                      {t.category}
+                    </td>
+
+                    <td className="px-4 sm:px-6 py-3">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleEdit(t)
+                        }}
+                        className="px-3 py-1 text-xs sm:text-sm rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition"
+                      >
+                        Edit
+                      </button>
+                    </td>
+
+                    <td className="px-4 sm:px-6 py-3">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleRemove(t)
+                        }}
+                        className="px-3 py-1 text-xs sm:text-sm rounded-full bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition"
+                      >
+                        Delete
+                      </button>
+                    </td>
+
+                  </tr>
+                ))
+              )}
             </tbody>
 
           </table>
@@ -678,7 +713,7 @@ const Transaction = () => {
           </div>
         </div>
       )}
-      
+
     </>
   )
 }

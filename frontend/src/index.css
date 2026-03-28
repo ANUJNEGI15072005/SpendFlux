@@ -2,17 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Chrome, Edge, Safari */
 ::-webkit-scrollbar {
   display: none;
 }
 
-/* Firefox */
 html {
   scrollbar-width: none;
 }
 
-/* IE */
 body {
   -ms-overflow-style: none;
+}
+
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(200%);
+  }
 }

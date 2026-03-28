@@ -7,6 +7,7 @@ const Budget = () => {
   const [updateAmount, setUpdateAmount] = useState("")
   const [budgetInput, setBudgetInput] = useState(null)
   const [amount, setAmount] = useState("")
+  const [budgetLoading, setBudgetLoading] = useState(true)
   const [loading, setLoading] = useState(false)
   const [transaction, setTransaction] = useState([])
   const [insightLoading, setInsightLoading] = useState(false)
@@ -30,13 +31,19 @@ const Budget = () => {
 
   const fetchBudget = async () => {
     try {
+      setBudgetLoading(true)
+
       const res = await fetch(`${API_URL}/budget`, {
         credentials: "include"
       })
       const data = await res.json()
+
       setBudgetInput(normalizeBudget(data.budget))
+
     } catch (err) {
       console.error(err)
+    } finally {
+      setBudgetLoading(false)
     }
   }
 
@@ -186,7 +193,6 @@ const Budget = () => {
 
       await fetchBudget()
 
-      // ✅ IMPORTANT FIX
       setInsights(null)
 
       setShowUpdate(false)
@@ -204,7 +210,25 @@ const Budget = () => {
 
       <div className='mt-10 sm:mt-14 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-32'>
 
-        {budgetInput?.amount ? (
+        {budgetLoading ? (
+          /* LOADER */
+          <div className="mt-20 flex justify-center">
+            <div className="flex flex-col items-center gap-3">
+
+              <h1 className='text-2xl sm:text-3xl font-heading font-extrabold tracking-tight animate-pulse'>
+                Spend<span className='text-blue-900'>Flux</span>
+              </h1>
+
+              <div className="w-40 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-full w-1/2 bg-blue-900 animate-[loading_1s_linear_infinite]"></div>
+              </div>
+
+              <p className="text-sm text-gray-500">Loading your budget...</p>
+
+            </div>
+          </div>
+
+        ) : budgetInput?.amount ? (
           <div className='w-full'>
 
             <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8'>
@@ -371,6 +395,7 @@ const Budget = () => {
             </div>
 
           </div>
+
         ) : (
           <div className='mt-16 flex justify-center px-2'>
             <div className='w-full max-w-md bg-white shadow-xl rounded-2xl p-6 sm:p-8'>
@@ -405,10 +430,8 @@ const Budget = () => {
         {showUpdate && (
           <div className="fixed inset-0 z-50 flex items-center justify-center">
 
-            {/* BACKDROP */}
             <div className="absolute inset-0 bg-black/20 backdrop-blur-sm"></div>
 
-            {/* MODAL */}
             <div className="relative bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md">
 
               <div className="flex justify-between items-center mb-4">
